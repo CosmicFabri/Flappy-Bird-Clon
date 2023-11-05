@@ -1,5 +1,7 @@
 import pygame
 from sys import exit
+from random import randint
+from Obstacle import Pipeline, CheckPoint
 
 def bird_animation():
     global bird_index, bird_surf
@@ -12,7 +14,7 @@ pygame.init()
 game_active = False
 clock = pygame.time.Clock()
 
-# Screen and display
+# Screen and display 
 screen = pygame.display.set_mode((288, 512))
 pygame.display.set_caption("Flappy Bird")
 background_surf = pygame.image.load('Art/background-day.png').convert_alpha()
@@ -46,6 +48,18 @@ bird_index = 0
 bird_surf = bird_frames[bird_index]
 bird_rect = bird_surf.get_rect(center = (100, 270))
 
+#Obstacles
+pipes_group = pygame.sprite.Group()
+checkpoints_group = pygame.sprite.Group()
+
+#COLLISIONS
+
+
+#TIMERS
+#Controls pipe spawn
+obstacle_timer = pygame.USEREVENT + 1
+pygame.time.set_timer(obstacle_timer, 2000)
+
 while True:
     # Event loop
     for event in pygame.event.get():
@@ -53,7 +67,14 @@ while True:
             pygame.quit()
             exit()
         
-        if game_active:
+        if game_active: 
+            if event.type == obstacle_timer:
+                x = randint(450, 500)
+                y = randint(128, 320)
+                pipes_group.add(Pipeline("upwards",x,y))
+                pipes_group.add(Pipeline("downwards",x,y))
+                checkpoints_group.add(CheckPoint(x,y))
+                
             screen.blit(score_surf, score_rect)
         else:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
@@ -64,11 +85,21 @@ while True:
     if game_active:
         screen.blit(background_surf, (0, 0))
         screen.blit(score_surf, (0, 0))
-        screen.blit(ground_surf, ground_rect)
+        
+        #Making obstacles appear
+        #Pipes has to be drawn before the ground to avoid overlap
+        pipes_group.update()
+        pipes_group.draw(screen)
+        checkpoints_group.draw(screen)
+        checkpoints_group.update()
 
         # Making the ground move to the left
         ground_rect.right -= 2
         if ground_rect.right <= 288: ground_rect.right = 336
+        screen.blit(ground_surf, ground_rect)
+
+
+
     else:
         screen.blit(background_surf, (0, 0))
         screen.blit(main_message_surf, main_message_rect)
