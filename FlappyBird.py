@@ -3,12 +3,6 @@ from sys import exit
 from random import randint
 from Obstacle import Pipeline, CheckPoint
 
-def bird_animation():
-    global bird_index, bird_surf
-
-    bird_index += 0.2
-    if bird_index >= len(bird_frames): bird_index = 0
-    bird_surf = bird_frames[int(bird_index)]
 
 pygame.init()
 game_active = False
@@ -47,6 +41,13 @@ bird_frames = [bird_frame_1, bird_frame_2, bird_frame_3, bird_frame_4]
 bird_index = 0
 bird_surf = bird_frames[bird_index]
 bird_rect = bird_surf.get_rect(center = (100, 270))
+
+def bird_animation():
+    global bird_index, bird_surf
+
+    bird_index += 0.2
+    if bird_index >= len(bird_frames): bird_index = 0
+    bird_surf = bird_frames[int(bird_index)]
 
 #Obstacles
 pipes_group = pygame.sprite.Group()
